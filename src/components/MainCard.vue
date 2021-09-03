@@ -22,6 +22,12 @@
         </div>
       </div>
     </div>
+    <div v-if="currentQuestion>4">
+      <div class="result">5/{{marks.reduce((a, b)=>a+b)}}
+      </div>
+      <div class="grade"> {{grades[marks.reduce((a, b)=>a+b)-1]}}
+      </div>
+    </div>
     <div class="score-marks">
       <div v-for="(question, i) in questions" :key="i" class="score-mark"
         :class="{scoremarkcorrect: question.value, scoremarkincorrect: question.value==false}"/>
@@ -38,7 +44,7 @@ export default {
     console.log("d has a length of: "+d.length)
     /* eslint-enable no-console */
 
-    this.questions = d.map((a)=>this.questenify(a))
+    this.questions = d.map((a)=>this.questionify(a))
   },
   data(){
     return {
@@ -46,16 +52,17 @@ export default {
       corrected: false,
       userChoice: -1,
       marks: [null, null, null, null, null],
-      currentIndex: 0,
+      currentQuestion: 0,
+      grades: ["جميل", "جيد", "تقريبا رائع", "رائع", "ممتاز"],
     }
   },
   computed:{
     question: function(){
-      return this.questions[this.currentIndex]
+      return this.questions[this.currentQuestion]
     }
   },
   methods:{
-    questenify(arr){
+    questionify(arr){
       return {
         word: arr[0],
         options: arr.slice(1,3),
@@ -68,8 +75,9 @@ export default {
       if(this.question.userChoice==null){
         this.question.userChoice = i
         this.question.value = this.question.userChoice==this.question.correct
+        this.marks[this.currentQuestion] = this.question.value? 1 : 0
         setTimeout(()=>{
-          this.currentIndex++
+          this.currentQuestion++
         }, 1000)
       }
     },
@@ -79,13 +87,14 @@ export default {
 
 <style scoped>
 .main-card{
-    padding: 8px;
+    padding: 32px;
     border-radius: 8px;
-    box-shadow: 0px 0px 6px #444444;
+    box-shadow: 0px 2px 16px #bbbbbb;
     max-width: 600px;
     margin: auto;
     display: flex;
-    flex-direction: column
+    flex-direction: column;
+    background: white;
 }
 .header{
     display: flex;
@@ -95,12 +104,17 @@ export default {
 .title{
     color: blue;
     font-weight: bold;
+    font-size: 28px;
+}
+.question{
+  font-size: 22px;
 }
 .option{
   border: 1px #888888 solid;
   margin-top: 12px;
   border-radius: 4px;
   padding: 8px;
+  font-size: 20px;
 }
 
 .option:hover{
@@ -144,5 +158,12 @@ export default {
 .option-icon{
   height: 12px;
   width: 12px;
+}
+.result{
+  font-size: 36px;
+}
+.grade{
+  font-size: 28px;
+  font-weight: bold;
 }
 </style>
